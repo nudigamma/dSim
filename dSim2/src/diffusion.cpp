@@ -15,7 +15,6 @@
 #include <cstdio>
 #include <algorithm>
 #include <math.h>
-#include <cutil.h>
 #include <fstream>
 #include <string.h>
 #include <sys/time.h>
@@ -26,7 +25,7 @@
 #include <gtk/gtk.h>
 #include <gtk/gtkgl.h>
 #include <libconfig.h++>
-
+#include <helper_functions.h>
 #include "spinSystem.h"
 #include "renderSpins.h"
 #include "paramgl.h"
@@ -1081,7 +1080,7 @@ int main(int argc, char* argv[]) {
 	//const char *testFiberFileName = "/home/bragis/Academic/initialTestFiberFileName.fibers";
 
 	char *configFilename;
-	if(!cutGetCmdLineArgumentstr( argc, (const char**) argv, "config", &configFilename)) {
+	if(!getCmdLineArgumentString( argc, (const char**) argv, "config", &configFilename)) {
 		configFilename = "sim.cfg";
 	}
 
@@ -1107,8 +1106,8 @@ int main(int argc, char* argv[]) {
 
 	const char *fiberFileConst;
 	char *fiberFileFromCmdLine;
-	if(cutGetCmdLineArgumentstr( argc, (const char**) argv, "fibersFile", &fiberFileFromCmdLine)){
-	//if(cutGetCmdLineArgumentstr( argc, (const char**) argv, "fibersFile", &fiberFileConst)){
+	if(getCmdLineArgumentString( argc, (const char**) argv, "fibersFile",&fiberFileFromCmdLine)){
+	//if(getCmdLineArgumentString( argc, (const char**) argv, "fibersFile", &fiberFileConst)){
 		fiberFileGivenInCommandLine = 1;
 		fiberFileConst = fiberFileFromCmdLine;
 	} else if(cfg.lookupValue("fibers.file", fiberFileConst)){
@@ -1121,13 +1120,13 @@ int main(int argc, char* argv[]) {
 
 	cfg.lookupValue("app.useGpu", useGpu);
 	// Allow command-line override:
-	if(cutCheckCmdLineFlag(argc, (const char**) argv, "gpu")) useGpu = true;
-	else if(cutCheckCmdLineFlag(argc, (const char**) argv, "cpu")) useGpu = false;
+	if(checkCmdLineFlag(argc, (const char**) argv, "gpu")) useGpu = true;
+	else if(checkCmdLineFlag(argc, (const char**) argv, "cpu")) useGpu = false;
 
 	cfg.lookupValue("app.useDisplay", useDisplay);
 	// Allow command-line override:
-	if(cutCheckCmdLineFlag(argc, (const char**) argv, "disp")) useDisplay = true;
-	else if(cutCheckCmdLineFlag(argc, (const char**) argv, "nodisp")) useDisplay = false;
+	if(checkCmdLineFlag(argc, (const char**) argv, "disp")) useDisplay = true;
+	else if(checkCmdLineFlag(argc, (const char**) argv, "nodisp")) useDisplay = false;
 
 	// Read simulation parameters from config file
 	cfg.lookupValue("sim.numSpins", numSpins);
@@ -1144,7 +1143,7 @@ int main(int argc, char* argv[]) {
 	cfg.lookupValue("sim.permeability", permeability);
 
 	int cmdNumSpins = 0;
-	if(cutGetCmdLineArgumenti( argc, (const char**) argv, "numSpins", &cmdNumSpins)){
+	if(getCmdLineArgumentInt( argc, (const char**) argv, "numSpins")){
 		numSpins = (uint)abs(cmdNumSpins);
 		printf("OVERRIDING number of spins with command-line arg: numSpins = %d\n", numSpins);
 	}
@@ -1724,14 +1723,14 @@ int main(int argc, char* argv[]) {
 		cfg.lookupValue("fibers.spacingStdev", fiberSpaceStd);
 		cfg.lookupValue("fibers.crossFraction", crossFraction);
     
-		if(cutGetCmdLineArgumentf( argc, (const char**) argv, "radiusMean", &cmdVal)){
+		if(getCmdLineArgumentFloat( argc, (const char**) argv, "radiusMean")){
 			// Keep the std proportional to the mean
 			fiberRadiusStd = fiberRadiusStd/fiberRadius*cmdVal;
 			fiberRadius = cmdVal;
 			printf("OVERRIDING mean fiber radius with command-line arg: mean = %0.3g, std = %0.4g\n", fiberRadius, fiberRadiusStd);
 		}
 
-		if(cutGetCmdLineArgumentf( argc, (const char**) argv, "spaceMean", &cmdVal)){
+		if(getCmdLineArgumentFloat( argc, (const char**) argv, "spaceMean")){
 			fiberSpace = cmdVal;
 			// Keep the std proportional to the mean
 			fiberSpaceStd = fiberSpaceStd/fiberSpace*cmdVal;
@@ -1740,12 +1739,12 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
-	if(cutGetCmdLineArgumentf( argc, (const char**) argv, "spaceScale", &cmdVal)){
+	if(getCmdLineArgumentFloat( argc, (const char**) argv, "spaceScale")){
 		spaceScale = cmdVal;
 		printf("OVERRIDING space scale with command-line arg: spaceScale = %0.1f\n", spaceScale);
 	}
 
-	if(cutGetCmdLineArgumentf( argc, (const char**) argv, "crossFraction", &cmdVal)){
+	if(getCmdLineArgumentFloat( argc, (const char**) argv, "crossFraction")){
 		crossFraction = cmdVal;
 		printf("OVERRIDING proportion of crossing fibers with command-line arg: crossFraction = %g\n", crossFraction);
 	}
@@ -1754,7 +1753,7 @@ int main(int argc, char* argv[]) {
 
 
 	char *outFilename;
-	if(cutGetCmdLineArgumentstr( argc, (const char**) argv, "out", &outFilename)){
+	if(getCmdLineArgumentString( argc, (const char**) argv, "out", &outFilename)){
 		outFilePtr = fopen(outFilename,"at");
 		time_t now = time(NULL);
 		fprintf(outFilePtr,"\n%% * * * %s", ctime(&now));

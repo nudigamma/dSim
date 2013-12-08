@@ -63,9 +63,9 @@ endif
 SRCDIR     ?= src
 BINDIR     ?= bin
 ROOTOBJDIR ?= obj
-ROOTDIR    ?= /usr/local/cuda/sdk
-LIBDIR     := $(ROOTDIR)/C/lib
-COMMONDIR  := $(ROOTDIR)/C/common
+ROOTDIR    ?= /usr/local/cuda/samples
+LIBDIR     := $(ROOTDIR)/common/lib/linux/x86_64
+COMMONDIR  := $(ROOTDIR)/common
 
 # Compilers
 NVCC       := nvcc 
@@ -153,7 +153,7 @@ endif
 
 ifeq ($(USEPARAMGL),1)
 	#PARAMGLLIB := -lparamgl$(LIBSUFFIX)
-	PARAMGLLIB := -lparamgl_x86_64$(LIBSUFFIX)
+	#PARAMGLLIB := -lparamgl_x86_64$(LIBSUFFIX)
 endif
 
 ifeq ($(USECUDPP), 1)
@@ -206,7 +206,7 @@ ifneq ($(STATIC_LIB),)
 	LINKLINE  = ar qv $(TARGET) $(OBJS) 
 else
 	#LIB += -lcutil$(LIBSUFFIX)
-	LIB += -lcutil_x86_64$(LIBSUFFIX)
+	#LIB += -lcutil_x86_64$(LIBSUFFIX)
 	# Device emulation configuration
 	ifeq ($(emu), 1)
 		NVCCFLAGS   += -deviceemu

@@ -9,66 +9,61 @@
  * Shyamsundar Gopalakrishnan (gshyam@stanford.edu).
  */
 
-#include <cutil.h>
 #include <cstdlib>
 #include <cstdio>
 #include <string.h>
 #include <GL/glut.h>
 #include <cuda_gl_interop.h>
-
+#include <helper_functions.h>
 #include "spinKernel.cuh"
 #include "spinKernel.cu"
 #include "radixsort.cu"
-
+#include <helper_cuda.h>
 extern "C"
 {
 
 void checkCUDA()
-{   
-#if CUDA2
-    CUT_DEVICE_INIT(0,0);
-#else
-    CUT_DEVICE_INIT();
-#endif
+{
+  gpuDeviceInit(0);
 }
 
 void allocateArray(void **devPtr, size_t size)
 {
-    CUDA_SAFE_CALL(cudaMalloc(devPtr, size));
+	checkCudaErrors(cudaMalloc(devPtr,size));
 }
 
 void freeArray(void *devPtr)
 {
-    CUDA_SAFE_CALL(cudaFree(devPtr));
+	checkCudaErrors(cudaFree(devPtr));
 }
 
 void threadSync()
 {
-    CUDA_SAFE_CALL(cudaThreadSynchronize());
+	checkCudaErrors(cudaThreadSynchronize());
 }
 
 void copyArrayFromDevice(void* host, const void* device, unsigned int vbo, int size)
-{   
-    if (vbo)
-        CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&device, vbo));
-    CUDA_SAFE_CALL(cudaMemcpy(host, device, size, cudaMemcpyDeviceToHost));
-    if (vbo)
-        CUDA_SAFE_CALL(cudaGLUnmapBufferObject(vbo));
+{
+	if (vbo)
+		checkCudaErrors(cudaGLMapBufferObject((void**)&device, vbo));
+	checkCudaErrors(cudaMemcpy(host, device, size, cudaMemcpyDeviceToHost));
+	if (vbo)
+		checkCudaErrors(cudaGLUnmapBufferObject(vbo));
 }
 
 void copyArrayToDevice(void* device, const void* host, int offset, int size)
 {
-    CUDA_SAFE_CALL(cudaMemcpy((char *) device + offset, host, size, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy((char *) device + offset, host, size, cudaMemcpyHostToDevice));
 }
 
 void registerGLBufferObject(uint vbo)
 {
-    CUDA_SAFE_CALL(cudaGLRegisterBufferObject(vbo));
+	checkCudaErrors(cudaGLRegisterBufferObject(vbo));
 }
 
 void unregisterGLBufferObject(uint vbo)
 {
-    CUDA_SAFE_CALL(cudaGLUnregisterBufferObject(vbo));
+	checkCudaErrors(cudaGLUnregisterBufferObject(vbo));
 }
 
 void bindFiberList(float* ptr, int size)
@@ -191,7 +186,7 @@ http://www.pas.rochester.edu/~rge21/computing/gpucomputing/cudaoptimise.shtml
 		                                  iterations);
 
 	// check if kernel invocation generated an error
-	CUT_CHECK_ERROR("Kernel execution failed");
+	getLastCudaError("Kernel execution failed");
 }
 
 void integrateSystemVbo(
@@ -216,12 +211,12 @@ void integrateSystemVbo(
                      )
 {
 	float *pos;
-	CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&pos, vboPos));
+	checkCudaErrors(cudaGLMapBufferObject((void**)&pos, vboPos));
 	integrateSystem(pos,randSeed,deltaTime,fiberPos,permeability,intraAdc,extraAdc,myelinAdc,numBodies,gradient,
 	                phaseConstant,cubeCounters,cubeList,cubeLength,numCubes,maxFibersPerCube,
 	                myelinRadius,iterations);
 	//now copy back the space
-	CUDA_SAFE_CALL(cudaGLUnmapBufferObject(vboPos));
+	checkCudaErrors(cudaGLUnmapBufferObject(vboPos));
 }
 
 

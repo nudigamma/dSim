@@ -7,8 +7,7 @@
 #include "spinKernel.cuh"
 #include "radixsort.cuh"
 #include "options.h"
-#include <cutil.h>
-
+#include <helper_functions.h>
 #include <assert.h>
 #include <math.h>
 #include <memory.h>
@@ -137,7 +136,6 @@ bool SpinSystem::build()
    // Only allow initialization once.
     assert(!m_bInitialized);
     checkCUDA();
-
     if(m_maxFiberRadius<=0.0) return(false);
 
     uint tempGridSize = (uint)(2.0f/(float)(m_maxFiberRadius*4))-1;
@@ -221,7 +219,7 @@ bool SpinSystem::build()
         glUnmapBufferARB(GL_ARRAY_BUFFER);
     }
 
-    CUT_SAFE_CALL(cutCreateTimer(&m_timer));
+    sdkCreateTimer(&m_timer);
     m_bInitialized = true;
     printf("Finished initializing spin system\n");
     return(true);
@@ -768,7 +766,7 @@ void SpinSystem::_finalize()
 {
     assert(m_bInitialized);
     
-    CUT_SAFE_CALL(cutDeleteTimer(m_timer));
+    sdkDeleteTimer(&m_timer);
     unbindFiberList();
     unbindCubeList();
     delete [] m_hPos;
@@ -849,8 +847,8 @@ float SpinSystem::update(float deltaTime, uint iterations){
     // For some reason, the cutXXTimer code needs a GLUT window, so it segfaults when
     // the display is disabled. However, on my system, the ANSI process timer ('clock') 
     // seems to give similar results to cutXXTimer, so we'll just use that.
-    CUT_SAFE_CALL(cutResetTimer(m_timer));
-    CUT_SAFE_CALL(cutStartTimer(m_timer)); 
+    sdkResetTimer(&m_timer);
+    sdkStartTimer(&m_timer); 
 
 	//printf("In SpinSystem::updateSpins: m_hPos[100]: %g\n", m_hPos[100]);
     //time_t start = clock();
@@ -904,8 +902,8 @@ float SpinSystem::update(float deltaTime, uint iterations){
 
 	//printf("In SpinSystem::updateSpins: m_hPos[100]: %g\n", m_hPos[100]);
 
-    CUT_SAFE_CALL(cutStopTimer(m_timer));
-    kernelTime = cutGetTimerValue(m_timer)/1000.0f;
+    sdkStopTimer(&m_timer);
+    kernelTime = sdkGetTimerValue(&m_timer)/1000.0f;
 
     //kernelTime = (float)(clock()-start)/CLOCKS_PER_SEC;
 	m_totalNumTimeSteps += iterations;

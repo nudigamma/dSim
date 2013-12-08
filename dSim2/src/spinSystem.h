@@ -3,7 +3,7 @@
 #include <fstream>
 #define DEBUG_GRID 0
 #define DO_TIMING 0
-
+#include <helper_functions.h>
 #include "options.h"
 #include <math.h>
 
@@ -264,7 +264,7 @@ protected:
 	float* m_dFiberPos;
 
     // A CUDA timer
-    uint m_timer;
+        StopWatchInterface *m_timer;
 
 	// uniform cubes data
 	uint*  m_dCubeCounter; // counts number of entries per cube
