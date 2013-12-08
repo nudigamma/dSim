@@ -219,7 +219,9 @@ bool SpinSystem::build()
         glUnmapBufferARB(GL_ARRAY_BUFFER);
     }
 
-    sdkCreateTimer(&m_timer);
+    if(!sdkCreateTimer(&m_timer))
+    RUNTIME_EXCEPTION("Failed to Create timer ");
+    
     m_bInitialized = true;
     printf("Finished initializing spin system\n");
     return(true);
@@ -766,7 +768,8 @@ void SpinSystem::_finalize()
 {
     assert(m_bInitialized);
     
-    sdkDeleteTimer(&m_timer);
+    if(!sdkDeleteTimer(&m_timer))
+    RUNTIME_EXCEPTION("Failed to Delete Timer");
     unbindFiberList();
     unbindCubeList();
     delete [] m_hPos;
@@ -847,8 +850,11 @@ float SpinSystem::update(float deltaTime, uint iterations){
     // For some reason, the cutXXTimer code needs a GLUT window, so it segfaults when
     // the display is disabled. However, on my system, the ANSI process timer ('clock') 
     // seems to give similar results to cutXXTimer, so we'll just use that.
-    sdkResetTimer(&m_timer);
-    sdkStartTimer(&m_timer); 
+    if(!sdkResetTimer(&m_timer))
+    RUNTIME_EXCEPTION("Failed to reset Timer");
+    if(!sdkStartTimer(&m_timer))
+    RUNTIME_EXCEPTION("Failed to start Timer");
+
 
 	//printf("In SpinSystem::updateSpins: m_hPos[100]: %g\n", m_hPos[100]);
     //time_t start = clock();
@@ -902,7 +908,8 @@ float SpinSystem::update(float deltaTime, uint iterations){
 
 	//printf("In SpinSystem::updateSpins: m_hPos[100]: %g\n", m_hPos[100]);
 
-    sdkStopTimer(&m_timer);
+    if(!sdkStopTimer(&m_timer))
+    RUNTIME_EXCEPTION("Failed to stop Timer");
     kernelTime = sdkGetTimerValue(&m_timer)/1000.0f;
 
     //kernelTime = (float)(clock()-start)/CLOCKS_PER_SEC;
