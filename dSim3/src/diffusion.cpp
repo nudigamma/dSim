@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include <libconfig.h++>
-#include <cutil.h>
+#include <helper_functions.h>
 #include <string.h>
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -216,24 +216,24 @@ void readInputs(int argc, char** argv, char *configFilename, int *pstepsPerUpdat
 	///////////////////////////////////////////////////////////////////////////////////////
 	
 	// See if the command line specifies whether we should display graphics	
-	if(cutCheckCmdLineFlag(argc, (const char**) argv, "disp")){
+	if(checkCmdLineFlag(argc, (const char**) argv, "disp")){
 		useDisplay = true;
 	}	
-	else if(cutCheckCmdLineFlag(argc, (const char**) argv, "nodisp")){
+	else if(checkCmdLineFlag(argc, (const char**) argv, "nodisp")){
 		useDisplay = false;
 	}
 
-	if(cutCheckCmdLineFlag(argc, (const char**) argv, "gpu")){
+	if(checkCmdLineFlag(argc, (const char**) argv, "gpu")){
 		useGpu = true;
 	}	
-	else if(cutCheckCmdLineFlag(argc, (const char**) argv, "cpu")){
+	else if(checkCmdLineFlag(argc, (const char**) argv, "cpu")){
 		useGpu = false;
 	}
 
-	if(cutCheckCmdLineFlag(argc, (const char**) argv, "w")){
+	if(checkCmdLineFlag(argc, (const char**) argv, "w")){
 		writeOut = true;
 	}	
-	else if(cutCheckCmdLineFlag(argc, (const char**) argv, "nw")){
+	else if(checkCmdLineFlag(argc, (const char**) argv, "nw")){
 		writeOut = false;
 	}
 
@@ -242,27 +242,27 @@ void readInputs(int argc, char** argv, char *configFilename, int *pstepsPerUpdat
 	int cmdVali = NAN;
 	char *cmdVals;
 
-        if(cutGetCmdLineArgumenti( argc, (const char**) argv, "stepsPerUpdate", &cmdVali)){
+        if(getCmdLineArgumentInt( argc, (const char**) argv, "stepsPerUpdate")){
 		*pstepsPerUpdate = cmdVali;
         }
 
-        if(cutGetCmdLineArgumenti( argc, (const char**) argv, "numSpins", &cmdVali)){
+        if(getCmdLineArgumentInt( argc, (const char**) argv, "numSpins")){
 		*pnumSpins = cmdVali;
         }
 
-	if(cutGetCmdLineArgumenti( argc, (const char**) argv, "searchMethod", &cmdVali)){
+	if(getCmdLineArgumentInt( argc, (const char**) argv, "searchMethod")){
 		*psearchMethod = cmdVali;
         }
 
-        if(cutGetCmdLineArgumentf( argc, (const char**) argv, "perm", &cmdValf)){
+        if(getCmdLineArgumentFloat( argc, (const char**) argv, "perm")){
 		*ppermeability = cmdValf;
         }
 
-	if(cutGetCmdLineArgumentf( argc, (const char**) argv, "startBox", &cmdValf)){
+	if(getCmdLineArgumentFloat( argc, (const char**) argv, "startBox")){
 		*pstartBoxSize = cmdValf;
         }
 
-	if(cutGetCmdLineArgumentstr( argc, (const char**) argv, "fiberFile", &cmdVals)){
+	if(getCmdLineArgumentString( argc, (const char**) argv, "fiberFile", &cmdVals)){
 		fiberFile = (char *)malloc((strlen(cmdVals)+1)*sizeof(char));
 		strcpy(fiberFile, cmdVals);
 	}
@@ -1073,12 +1073,12 @@ int main( int argc, char** argv){
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	// The name of the configuration file is assumed to be sim.cfg unless another name is 
-	// detected using the function cutGetCmdLineArgumentstr.
+	// detected using the function getCmdLineArgumentString.
 	// To use this function we need to use the flag -lcutil in our compile statement
 	// See description at stingnet.com
 	///////////////////////////////////////////////////////////////////////////////////////
 	char *configFilename;
-	if (!cutGetCmdLineArgumentstr(argc, (const char**) argv, "config", &configFilename)){
+	if (!getCmdLineArgumentString(argc, (const char**) argv, "config", &configFilename)){
 		configFilename = "sim.cfg";
 	}
 

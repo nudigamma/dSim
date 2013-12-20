@@ -4,13 +4,13 @@
 //			kernel.
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#include <cutil.h>
+
 #include <cstdlib>
 #include <cstdio>
 #include <string.h>
 #include <GL/glut.h>
 #include <cuda_gl_interop.h>
-
+#include <helper_cuda.h>
 #include "spinKernel.cu"
 #include "radixsort.cu"
 //#include "dSimDataTypes.h"
@@ -20,11 +20,7 @@ extern "C"
 
 void checkCUDA()
 {
-#if CUDA2
-	CUT_DEVICE_INIT(0,0);
-#else
-	CUT_DEVICE_INIT();
-#endif
+  gpuDeviceInit(0);
 }
 
 
@@ -35,7 +31,7 @@ void checkCUDA()
 ///////////////////////////////////////////////////////////////////////
 void allocateArray(void **devPtr, size_t size)
 {
-	CUDA_SAFE_CALL(cudaMalloc(devPtr,size));
+	checkCudaErrors(cudaMalloc(devPtr,size));
 }
 
 
@@ -46,7 +42,7 @@ void allocateArray(void **devPtr, size_t size)
 ///////////////////////////////////////////////////////////////////////
 void freeArray(void *devPtr)
 {
-	CUDA_SAFE_CALL(cudaFree(devPtr));
+	checkCudaErrors(cudaFree(devPtr));
 }
 
 
@@ -57,7 +53,7 @@ void freeArray(void *devPtr)
 ///////////////////////////////////////////////////////////////////////
 void threadSync()
 {
-	CUDA_SAFE_CALL(cudaThreadSynchronize());
+	checkCudaErrors(cudaThreadSynchronize());
 }
 
 
@@ -69,10 +65,10 @@ void threadSync()
 void copyArrayFromDevice(void* host, const void* device, unsigned int vbo, int size)
 {
 	if (vbo)
-		CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&device, vbo));
-	CUDA_SAFE_CALL(cudaMemcpy(host, device, size, cudaMemcpyDeviceToHost));
+		checkCudaErrors(cudaGLMapBufferObject((void**)&device, vbo));
+	checkCudaErrors(cudaMemcpy(host, device, size, cudaMemcpyDeviceToHost));
 	if (vbo)
-		CUDA_SAFE_CALL(cudaGLUnmapBufferObject(vbo));
+		checkCudaErrors(cudaGLUnmapBufferObject(vbo));
 }
 
 
@@ -83,7 +79,7 @@ void copyArrayFromDevice(void* host, const void* device, unsigned int vbo, int s
 ////////////////////////////////////////////////////////////////////////
 void copyArrayToDevice(void* device, const void* host, int offset, int size)
 {
-	CUDA_SAFE_CALL(cudaMemcpy((char *) device + offset, host, size, cudaMemcpyHostToDevice));
+	checkCudaErrors(cudaMemcpy((char *) device + offset, host, size, cudaMemcpyHostToDevice));
 }
 
 
@@ -94,7 +90,7 @@ void copyArrayToDevice(void* device, const void* host, int offset, int size)
 /////////////////////////////////////////////////////////////////////////
 void copyConstantToDevice(void* device, const void* host, int offset, int size)
 {
-	CUDA_SAFE_CALL(cudaMemcpyToSymbol((char *) device, host, size));
+	checkCudaErrors(cudaMemcpyToSymbol((char *) device, host, offset, size));
 }
 
 
@@ -104,7 +100,7 @@ void copyConstantToDevice(void* device, const void* host, int offset, int size)
 //////////////////////////////////////////////////////////////////////////
 void registerGLBufferObject(uint vbo)
 {
-	CUDA_SAFE_CALL(cudaGLRegisterBufferObject(vbo));
+	checkCudaErrors(cudaGLRegisterBufferObject(vbo));
 }
 
 
@@ -115,7 +111,7 @@ void registerGLBufferObject(uint vbo)
 //////////////////////////////////////////////////////////////////////////
 void unregisterGLBufferObject(uint vbo)
 {
-	CUDA_SAFE_CALL(cudaGLUnregisterBufferObject(vbo));
+	checkCudaErrors(cudaGLUnregisterBufferObject(vbo));
 }
 
 
@@ -266,7 +262,7 @@ void integrateSystem(
 						phaseConstant,
 						iterations, trianglesInCubes, cubeCounter);
 
-	CUT_CHECK_ERROR("Kernel execution failed\n");
+	getLastCudaError("Kernel execution failed\n");
 }
 
 
@@ -290,9 +286,9 @@ void integrateSystemVBO(
 			)
 {
 	float *pos;
-	CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&pos, vboPos));
+	checkCudaErrors(cudaGLMapBufferObject((void**)&pos, vboPos));
 	integrateSystem(pos,randSeed,spinInfo,deltaTime,permeability, numBodies, gradient, phaseConstant, iterations, trianglesInCubes, cubeCounter);
-	CUDA_SAFE_CALL(cudaGLUnmapBufferObject(vboPos));
+	checkCudaErrors(cudaGLUnmapBufferObject(vboPos));
 }
 
 

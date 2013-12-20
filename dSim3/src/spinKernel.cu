@@ -8,7 +8,8 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "cutil_math.h"
+#include <helper_math.h>
+//#include "cutil_math.h"
 #include "math_constants.h"
 #include "options.h"
 #include "dSimDataTypes.h"
