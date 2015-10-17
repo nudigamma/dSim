@@ -778,7 +778,7 @@ void display(){
         		renderer->setVertexBuffer(psystem->getCurrentReadBuffer(), psystem->getNumSpins());
         		psystem->setColorFromSignal();
    		}else{
-         		usleep(15000);
+         		//usleep(15000);
     		}
 		//printf("Done running update\n");
 	}

@@ -66,7 +66,11 @@ ROOTOBJDIR ?= obj
 ROOTDIR    ?= /usr/local/cuda/samples
 LIBDIR     := $(ROOTDIR)/common/lib/linux/x86_64
 COMMONDIR  := $(ROOTDIR)/common
-
+LINUXINCLUDE :=/usr/include
+GTK := $(LINUXINCLUDE)/gtk-2.0
+GLIB := $(LINUXINCLUDE)/glib-2.0
+LINUXLIBINCLUDE := /usr/lib/x86_64-linux-gnu/glib-2.0/include
+CAIRO := $(LINUXINCLUDE)/cairo
 # Compilers
 NVCC       := nvcc 
 CXX        := g++
@@ -74,7 +78,7 @@ CC         := gcc
 LINK       := g++ -fPIC
 
 # Includes
-INCLUDES  += -I. -I$(CUDA_INSTALL_PATH)/include -I$(COMMONDIR)/inc
+INCLUDES  += -I. -I$(CUDA_INSTALL_PATH)/include -I$(COMMONDIR)/inc -I$(GTK) -I$(GLIB) -I$(LINUXLIBINCLUDE) -I$(CAIRO)
 
 # architecture flag for cubin build
 CUBIN_ARCH_FLAG := -m32

@@ -94,7 +94,7 @@ $(OBJDIR)/shaders.o: $(SRCDIR)/shaders.cpp
 	g++ -fno-strict-aliasing $(CXXFLAGS) -I. -I$(CUDA_INCLUDE) -I$(CUDA_SAMPLES_INCLUDE) -DUNIX -g -o $(OBJDIR)/shaders.o -c $(SRCDIR)/shaders.cpp
 
 $(OBJDIR)/spinSystem.cu_o: $(SRCDIR)/spinSystem.cu
-	nvcc -o $(OBJDIR)/spinSystem.cu_o -c $(SRCDIR)/spinSystem.cu --ptxas-options="-v" --compiler-options -fno-strict-aliasing -arch=sm_21 $(NVCCFLAGS) -I. -I$(CUDA_INCLUDE) -I$(CUDA_SAMPLES_INCLUDE) -DUNIX -g
+	/usr/local/cuda/bin/nvcc -o $(OBJDIR)/spinSystem.cu_o -c $(SRCDIR)/spinSystem.cu --ptxas-options="-v" --compiler-options -fno-strict-aliasing -arch=sm_21 $(NVCCFLAGS) -I. -I$(CUDA_INCLUDE) -I$(CUDA_SAMPLES_INCLUDE) -DUNIX -g
 makedirs:	
 	@mkdir -p $(OBJDIR)
 	@mkdir -p $(TARGETDIR)
